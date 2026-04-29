@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Торговля по расписанию</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            background: linear-gradient(145deg, #0a1a1a 0%, #071212 100%);
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: system-ui, -apple-system, 'Segoe UI', 'Roboto', monospace;
+            padding: 8px;
+            min-height: 100vh;
+        }
+
+        .widget {
+            width: 100%;
+            max-width: 300px;
+            background: rgba(18, 28, 26, 0.94);
+            backdrop-filter: blur(4px);
+            border-radius: 28px;
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 200, 100, 0.4);
+            padding: 12px 10px 16px 10px;
+            min-width: 0;
+        }
+
+        /* Панель выбора языка */
+        .lang-panel {
+            background: #0e1e1b;
+            border-radius: 40px;
+            padding: 6px 12px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            border: 1px solid #ffcd7a55;
+        }
+
+        .lang-panel label {
+            font-size: 0.65rem;
+            color: #ffcd8a;
+            font-weight: 600;
+        }
+
+        .lang-btn {
+            background: #1a2f28;
+            border: none;
+            color: #c7bc86;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: monospace;
+        }
+
+        .lang-btn.active {
+            background: #ffb347;
+            color: #1a2a1a;
+            box-shadow: 0 0 0 1px #fff0b5;
+        }
+
+        .time-panel {
+            background: #00000040;
+            border-radius: 60px;
+            padding: 6px 10px;
+            margin-bottom: 14px;
+            text-align: center;
+            border-bottom: 2px solid #ffb347;
+        }
+
+        .clock {
+            font-size: clamp(1.2rem, 8vw, 1.6rem);
+            font-weight: 700;
+            font-family: monospace;
+            letter-spacing: 2px;
+            color: #ffeaaf;
+            text-shadow: 0 2px 4px black;
+            white-space: nowrap;
+            overflow-x: auto;
+        }
+
+        .clock-label {
+            font-size: 0.6rem;
+            color: #c7bc86;
+            letter-spacing: 1px;
+            margin-top: 3px;
+            white-space: nowrap;
+        }
+
+        .current-block {
+            background: #0f1f1c;
+            border-radius: 20px;
+            padding: 10px 8px;
+            margin-bottom: 16px;
+            border-left: 4px solid #f5a623;
+        }
+
+        .current-label {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: #ffcd8a;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .current-product {
+            font-size: clamp(1.2rem, 7vw, 1.5rem);
+            font-weight: 800;
+            color: #ffdfa5;
+            line-height: 1.2;
+            margin-bottom: 4px;
+            word-break: keep-all;
+            white-space: nowrap;
+        }
+
+        .current-interval {
+            font-family: monospace;
+            font-size: 0.7rem;
+            background: #00000050;
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 30px;
+            color: #ffc97a;
+            white-space: nowrap;
+        }
+
+        .queue-header {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #b9ad7a;
+            margin-bottom: 10px;
+            padding-left: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .queue-header span:first-child {
+            background: #2b382e;
+            padding: 2px 8px;
+            border-radius: 40px;
+            white-space: nowrap;
+        }
+
+        .queue-header span:last-child {
+            font-size: 0.55rem;
+            white-space: nowrap;
+        }
+
+        .queue-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .queue-row {
+            background: #152522e0;
+            border-radius: 18px;
+            padding: 6px 10px;
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 8px;
+            border: 1px solid #ffcf7a30;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 220px) {
+            .queue-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+            .time-slot {
+                align-self: flex-start;
+            }
+        }
+
+        .queue-row:first-child {
+            background: #1f352f;
+            border-left: 3px solid #ffaa33;
+        }
+
+        .product-name {
+            font-weight: 700;
+            color: #ffefcf;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+
+        .product-name::before {
+            content: "⏱️";
+            font-size: 0.75rem;
+        }
+
+        .time-slot {
+            font-family: monospace;
+            font-size: 0.7rem;
+            background: #00000050;
+            padding: 2px 6px;
+            border-radius: 20px;
+            color: #ffd58c;
+            font-weight: 500;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .empty-msg {
+            text-align: center;
+            color: #b69454;
+            padding: 12px 6px;
+            background: #0c1c18;
+            border-radius: 20px;
+            font-size: 0.7rem;
+        }
+
+        .footer-note {
+            margin-top: 14px;
+            font-size: 0.5rem;
+            text-align: center;
+            color: #7d8a6e;
+            border-top: 1px dashed #5a6e5a60;
+            padding-top: 10px;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 200px) {
+            .widget {
+                padding: 6px 5px;
+            }
+            .product-name {
+                font-size: 0.75rem;
+            }
+            .time-slot {
+                font-size: 0.6rem;
+                padding: 2px 4px;
+            }
+            .current-product {
+                font-size: 1rem;
+            }
+            .clock {
+                font-size: 1rem;
+                letter-spacing: 1px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="widget">
+    <!-- Выбор языка -->
+    <div class="lang-panel">
+        <label>🌐 ЯЗЫК</label>
+        <button class="lang-btn active" data-lang="ru">РУ</button>
+        <button class="lang-btn" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="de">DE</button>
+    </div>
+
+    <div class="time-panel">
+        <div class="clock" id="liveClock">--:--:--</div>
+        <div class="clock-label" id="clockLabel">⏱️ ВАШЕ ВРЕМЯ (ПК)</div>
+    </div>
+
+    <div class="current-block">
+        <div class="current-label" id="currentLabel">🔔 ПРОДАВАТЬ СЕЙЧАС</div>
+        <div class="current-product" id="currentProduct">—</div>
+        <div class="current-interval" id="currentInterval">—</div>
+    </div>
+
+    <div class="queue-header">
+        <span id="queueHeader">📋 ПО ОЧЕРЕДИ</span>
+        <span id="queueSub">следующие старты</span>
+    </div>
+    <div id="queueContainer" class="queue-list">
+        <div class="empty-msg" id="loadingMsg">загрузка...</div>
+    </div>
+
+    <div class="footer-note" id="footerNote">
+        ⏲️ каждый слот длится 1 час
+    </div>
+</div>
+
+<script>
+    // ---------- ПЕРЕВОДЫ ----------
+    const translations = {
+        ru: {
+            clockLabel: "⏱️ ВАШЕ ВРЕМЯ (ПК)",
+            currentLabel: "🔔 ПРОДАВАТЬ СЕЙЧАС",
+            queueHeader: "📋 ПО ОЧЕРЕДИ",
+            queueSub: "следующие старты",
+            footer: "⏲️ каждый слот длится 1 час",
+            noSlot: "⏸️ нет слота",
+            waiting: "ожидание",
+            loading: "загрузка...",
+            comingSoon: "✨ скоро появятся",
+            products: {
+                "Джем": "Джем",
+                "Кирпич": "Кирпич",
+                "Железо": "Железо",
+                "Кофе": "Кофе"
+            }
+        },
+        en: {
+            clockLabel: "⏱️ YOUR TIME (PC)",
+            currentLabel: "🔔 SELL NOW",
+            queueHeader: "📋 UP NEXT",
+            queueSub: "next starts",
+            footer: "⏲️ each slot lasts 1 hour",
+            noSlot: "⏸️ no slot",
+            waiting: "waiting",
+            loading: "loading...",
+            comingSoon: "✨ coming soon",
+            products: {
+                "Джем": "Jam",
+                "Кирпич": "Bricks",
+                "Железо": "Iron",
+                "Кофе": "Coffee"
+            }
+        },
+        de: {
+            clockLabel: "⏱️ IHRE ZEIT (PC)",
+            currentLabel: "🔔 JETZT VERKAUFEN",
+            queueHeader: "📋 ALS NÄCHSTES",
+            queueSub: "nächste Starts",
+            footer: "⏲️ jeder Slot dauert 1 Stunde",
+            noSlot: "⏸️ kein Slot",
+            waiting: "warten",
+            loading: "laden...",
+            comingSoon: "✨ demnächst",
+            products: {
+                "Джем": "Marmelade",
+                "Кирпич": "Ziegel",
+                "Железо": "Eisen",
+                "Кофе": "Kaffee"
+            }
+        }
+    };
+
+    // ---------- РАСПИСАНИЕ (ВРЕМЯ НАЧАЛА - 48 МИНУТ) ----------
+    // Все слоты начинаются в XX:48
+    const productData = [
+        { name: "Джем",    slots: ["4:48", "8:48", "12:48", "16:48", "20:48", "0:48"] },
+        { name: "Кирпич",  slots: ["5:48", "9:48", "13:48", "17:48", "21:48", "1:48"] },
+        { name: "Железо",  slots: ["6:48", "10:48", "14:48", "18:48", "22:48", "2:48"] },
+        { name: "Кофе",    slots: ["7:48", "11:48", "15:48", "19:48", "23:48", "3:48"] }
+    ];
+
+    let currentLang = "ru";
+
+    // Преобразует строку времени "Ч:ММ" в минуты от полуночи (0..1440)
+    function timeToMinutes(timeStr) {
+        let parts = timeStr.split(':');
+        let hours = parseInt(parts[0], 10);
+        let minutes = parseInt(parts[1], 10);
+        if (hours === 24) hours = 0;
+        return hours * 60 + minutes;
+    }
+
+    // Получаем текущее время ПК в минутах от полуночи
+    function getCurrentPCMinutes() {
+        const now = new Date();
+        return now.getHours() * 60 + now.getMinutes();
+    }
+
+    // Построить список всех возможных слотов (окон) с продуктами
+    function getAllSlots() {
+        let slots = [];
+        for (let prod of productData) {
+            for (let slotStr of prod.slots) {
+                let startMin = timeToMinutes(slotStr);
+                slots.push({
+                    product: prod.name,
+                    startMin: startMin,
+                    startStr: slotStr,
+                    endMin: startMin + 60
+                });
+            }
+        }
+        slots.sort((a, b) => a.startMin - b.startMin);
+        return slots;
+    }
+
+    const allSlots = getAllSlots();
+
+    // Найти активный слот (текущее окно продажи) с учётом перехода через полночь
+    function findActiveSlot(nowMinutes) {
+        for (let slot of allSlots) {
+            let start = slot.startMin;
+            let end = slot.endMin;
+            if (end <= 1440) {
+                if (nowMinutes >= start && nowMinutes < end) {
+                    return slot;
+                }
+            } else {
+                // слот переходит за полночь (например 23:48 -> 00:48 следующего дня)
+                if (nowMinutes >= start && nowMinutes < 1440) return slot;
+                if (nowMinutes >= 0 && nowMinutes < (end - 1440)) return slot;
+            }
+        }
+        return null;
+    }
+
+    // Получить следующие N слотов (для очереди) после текущего времени
+    function getNextSlots(nowMinutes, limit = 6) {
+        let startEntries = [];
+        for (let prod of productData) {
+            for (let slotStr of prod.slots) {
+                let startMin = timeToMinutes(slotStr);
+                startEntries.push({
+                    product: prod.name,
+                    startMin: startMin,
+                    startStr: slotStr
+                });
+            }
+        }
+        startEntries.sort((a, b) => a.startMin - b.startMin);
+        
+        let nextIndex = startEntries.findIndex(entry => entry.startMin > nowMinutes);
+        if (nextIndex === -1) {
+            nextIndex = 0;
+        }
+        
+        let result = [];
+        let total = startEntries.length;
+        for (let i = 0; i < limit; i++) {
+            let idx = (nextIndex + i) % total;
+            let entry = startEntries[idx];
+            let endMin = entry.startMin + 60;
+            let endHours = Math.floor(endMin / 60) % 24;
+            let endMins = endMin % 60;
+            let endStr = `${endHours}:${endMins.toString().padStart(2, '0')}`;
+            if (endStr.startsWith("24:")) endStr = "0:" + endStr.split(':')[1];
+            result.push({
+                product: entry.product,
+                startStr: entry.startStr,
+                endStr: endStr
+            });
+        }
+        return result;
+    }
+
+    // Формирование строки интервала для активного слота
+    function formatActiveInterval(slot) {
+        if (!slot) return "—";
+        let endMin = slot.endMin;
+        let endHours = Math.floor(endMin / 60) % 24;
+        let endMins = endMin % 60;
+        let endStr = `${endHours}:${endMins.toString().padStart(2, '0')}`;
+        if (endStr.startsWith("24:")) endStr = "0:" + endStr.split(':')[1];
+        return `${slot.startStr} → ${endStr}`;
+    }
+
+    // Перевести название товара
+    function translateProduct(originalName) {
+        const t = translations[currentLang];
+        return t.products[originalName] || originalName;
+    }
+
+    // ----- ОСНОВНАЯ ФУНКЦИЯ ОБНОВЛЕНИЯ ИНТЕРФЕЙСА -----
+    function refreshUI() {
+        const t = translations[currentLang];
+        
+        // Обновляем тексты интерфейса
+        document.getElementById('clockLabel').innerText = t.clockLabel;
+        document.getElementById('currentLabel').innerText = t.currentLabel;
+        document.getElementById('queueHeader').innerText = t.queueHeader;
+        document.getElementById('queueSub').innerText = t.queueSub;
+        document.getElementById('footerNote').innerHTML = t.footer;
+        
+        const nowMinutes = getCurrentPCMinutes();
+        const activeSlot = findActiveSlot(nowMinutes);
+        
+        const currentProductEl = document.getElementById('currentProduct');
+        const currentIntervalEl = document.getElementById('currentInterval');
+        
+        if (activeSlot) {
+            currentProductEl.innerText = translateProduct(activeSlot.product);
+            currentIntervalEl.innerText = formatActiveInterval(activeSlot);
+        } else {
+            currentProductEl.innerText = t.noSlot;
+            currentIntervalEl.innerText = t.waiting;
+        }
+        
+        const nextSlots = getNextSlots(nowMinutes, 6);
+        const queueContainer = document.getElementById('queueContainer');
+        
+        if (!nextSlots.length) {
+            queueContainer.innerHTML = `<div class="empty-msg">${t.comingSoon}</div>`;
+            return;
+        }
+        
+        let queueHTML = '';
+        for (let slot of nextSlots) {
+            queueHTML += `
+                <div class="queue-row">
+                    <div class="product-name">${translateProduct(slot.product)}</div>
+                    <div class="time-slot">${slot.startStr} → ${slot.endStr}</div>
+                </div>
+            `;
+        }
+        queueContainer.innerHTML = queueHTML;
+    }
+    
+    // ----- ЖИВЫЕ ЧАСЫ -----
+    function updateClock() {
+        const now = new Date();
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const seconds = now.getSeconds().toString().padStart(2, '0');
+        const clockEl = document.getElementById('liveClock');
+        if (clockEl) {
+            clockEl.innerText = `${hours}:${minutes}:${seconds}`;
+        }
+    }
+    
+    // ----- ПЕРЕКЛЮЧЕНИЕ ЯЗЫКА -----
+    function setLanguage(lang) {
+        currentLang = lang;
+        localStorage.setItem('trade_lang', lang);
+        
+        // Обновляем активную кнопку
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            if (btn.dataset.lang === lang) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+        
+        refreshUI();
+    }
+    
+    // ----- ЗАГРУЗКА НАСТРОЕК -----
+    function loadSettings() {
+        const savedLang = localStorage.getItem('trade_lang');
+        if (savedLang && (savedLang === 'ru' || savedLang === 'en' || savedLang === 'de')) {
+            setLanguage(savedLang);
+        } else {
+            setLanguage('ru');
+        }
+    }
+    
+    // ----- ОБРАБОТЧИКИ КНОПОК -----
+    function bindEvents() {
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                setLanguage(btn.dataset.lang);
+            });
+        });
+    }
+    
+    // Автообновление
+    let clockInterval, refreshInterval;
+    
+    function startAutoUpdate() {
+        if (clockInterval) clearInterval(clockInterval);
+        clockInterval = setInterval(() => {
+            updateClock();
+        }, 1000);
+        
+        if (refreshInterval) clearInterval(refreshInterval);
+        refreshInterval = setInterval(() => {
+            refreshUI();
+        }, 15000);
+        
+        updateClock();
+        refreshUI();
+    }
+    
+    // Инициализация
+    loadSettings();
+    bindEvents();
+    startAutoUpdate();
+    
+    window.addEventListener('focus', () => {
+        refreshUI();
+        updateClock();
+    });
+</script>
+</body>
+</html>
