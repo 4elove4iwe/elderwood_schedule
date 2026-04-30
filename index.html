@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Торговля по расписанию</title>
+    <title>Elderwood Sales Schedule</title>
     <style>
         * {
             margin: 0;
@@ -37,7 +37,6 @@
             min-width: 0;
         }
 
-        /* Панель выбора языка */
         .lang-panel {
             background: #0e1e1b;
             border-radius: 40px;
@@ -73,6 +72,36 @@
             background: #ffb347;
             color: #1a2a1a;
             box-shadow: 0 0 0 1px #fff0b5;
+        }
+
+        .tz-panel {
+            background: #0e1e1b;
+            border-radius: 40px;
+            padding: 8px 12px;
+            margin-bottom: 14px;
+            border: 1px solid #ffcd7a55;
+        }
+
+        .tz-panel label {
+            font-size: 0.65rem;
+            color: #ffcd8a;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 6px;
+            text-align: center;
+        }
+
+        .tz-select {
+            width: 100%;
+            background: #1a2f28;
+            border: 1px solid #ffb347;
+            color: #ffefcf;
+            padding: 6px 8px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-family: monospace;
+            cursor: pointer;
+            text-align: center;
         }
 
         .time-panel {
@@ -161,11 +190,6 @@
             white-space: nowrap;
         }
 
-        .queue-header span:last-child {
-            font-size: 0.55rem;
-            white-space: nowrap;
-        }
-
         .queue-list {
             display: flex;
             flex-direction: column;
@@ -236,6 +260,124 @@
             font-size: 0.7rem;
         }
 
+        /* Блок расчёта производительности */
+        .calc-section {
+            margin-top: 20px;
+            background: #0a1a18;
+            border-radius: 20px;
+            padding: 10px 8px;
+            border: 1px solid #ffcd7a55;
+        }
+
+        .calc-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: #ffcd8a;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .calc-headers {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 4px 6px 4px;
+            margin-bottom: 6px;
+            border-bottom: 1px solid #ffcd7a33;
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: #c7bc86;
+        }
+
+        .calc-header-worker { width: 90px; text-align: left; }
+        .calc-header-speed { width: 50px; text-align: center; }
+        .calc-header-forecast { width: 60px; text-align: right; }
+
+        .worker-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            margin-bottom: 8px;
+            background: #00000030;
+            padding: 5px 8px;
+            border-radius: 16px;
+        }
+
+        .worker-info {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            width: 90px;
+        }
+
+        .worker-icon {
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .worker-name {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #ffefcf;
+            white-space: nowrap;
+        }
+
+        .worker-input {
+            width: 55px;
+            background: #1a2f28;
+            border: 1px solid #ffb347;
+            color: #ffefcf;
+            padding: 4px 4px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-family: monospace;
+            text-align: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .worker-result {
+            font-size: 0.7rem;
+            font-family: monospace;
+            color: #ffd58c;
+            font-weight: bold;
+            width: 65px;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .worker-result span {
+            font-size: 0.55rem;
+            color: #c7bc86;
+        }
+
+        .calc-total {
+            background: #1f352f;
+            border-radius: 16px;
+            padding: 8px 10px;
+            margin-top: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #ffaa33;
+        }
+
+        .total-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #ffcd8a;
+            text-transform: uppercase;
+        }
+
+        .total-value {
+            font-size: 0.9rem;
+            font-family: monospace;
+            font-weight: 800;
+            color: #ffdfa5;
+        }
+
         .footer-note {
             margin-top: 14px;
             font-size: 0.5rem;
@@ -246,40 +388,52 @@
             white-space: nowrap;
         }
 
-        @media (max-width: 200px) {
-            .widget {
-                padding: 6px 5px;
-            }
-            .product-name {
-                font-size: 0.75rem;
-            }
-            .time-slot {
-                font-size: 0.6rem;
-                padding: 2px 4px;
-            }
-            .current-product {
-                font-size: 1rem;
-            }
-            .clock {
-                font-size: 1rem;
-                letter-spacing: 1px;
-            }
+        input:focus {
+            outline: none;
+            border-color: #ffaa33;
+            box-shadow: 0 0 0 1px #ffaa33;
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+            appearance: textfield;
         }
     </style>
 </head>
 <body>
 <div class="widget">
-    <!-- Выбор языка -->
     <div class="lang-panel">
-        <label>🌐 ЯЗЫК</label>
-        <button class="lang-btn active" data-lang="ru">РУ</button>
+        <label>🌐 LANGUAGE</label>
         <button class="lang-btn" data-lang="en">EN</button>
         <button class="lang-btn" data-lang="de">DE</button>
+        <button class="lang-btn active" data-lang="ru">RU</button>
+    </div>
+
+    <div class="tz-panel">
+        <label>🕐 ВАШ ЧАСОВОЙ ПОЯС</label>
+        <select id="tzSelect" class="tz-select">
+            <option value="-12">GMT -12</option><option value="-11">GMT -11</option><option value="-10">GMT -10</option>
+            <option value="-9">GMT -9</option><option value="-8">GMT -8</option><option value="-7">GMT -7</option>
+            <option value="-6">GMT -6</option><option value="-5">GMT -5</option><option value="-4">GMT -4</option>
+            <option value="-3">GMT -3</option><option value="-2">GMT -2</option><option value="-1">GMT -1</option>
+            <option value="0">GMT 0</option><option value="1">GMT +1</option>
+            <option value="2">GMT +2 (сервер)</option>
+            <option value="3">GMT +3</option><option value="4">GMT +4</option>
+            <option value="5" selected>GMT +5</option>
+            <option value="6">GMT +6</option><option value="7">GMT +7</option><option value="8">GMT +8</option>
+            <option value="9">GMT +9</option><option value="10">GMT +10</option><option value="11">GMT +11</option>
+            <option value="12">GMT +12</option>
+        </select>
     </div>
 
     <div class="time-panel">
         <div class="clock" id="liveClock">--:--:--</div>
-        <div class="clock-label" id="clockLabel">⏱️ ВАШЕ ВРЕМЯ (ПК)</div>
+        <div class="clock-label" id="clockLabel">ВАШЕ МЕСТНОЕ ВРЕМЯ</div>
     </div>
 
     <div class="current-block">
@@ -290,85 +444,136 @@
 
     <div class="queue-header">
         <span id="queueHeader">📋 ПО ОЧЕРЕДИ</span>
-        <span id="queueSub">следующие старты</span>
+        <span id="queueSub">следующие старты (ваше время)</span>
     </div>
     <div id="queueContainer" class="queue-list">
-        <div class="empty-msg" id="loadingMsg">загрузка...</div>
+        <div class="empty-msg">загрузка...</div>
+    </div>
+
+    <!-- Блок расчёта производительности -->
+    <div class="calc-section">
+        <div class="calc-title" id="calcTitle">📊 ПРОГНОЗ ПРОДАЖ ДО КОНЦА ЧАСА</div>
+        
+        <div class="calc-headers">
+            <span class="calc-header-worker" id="headerWorker">Рабочий</span>
+            <span class="calc-header-speed" id="headerSpeed">Скорость</span>
+            <span class="calc-header-forecast" id="headerForecast">Прогноз</span>
+        </div>
+        
+        <div class="worker-row">
+            <div class="worker-info">
+                <span class="worker-icon">🃏</span>
+                <span class="worker-name" id="worker1Name">Bargainer</span>
+            </div>
+            <input type="number" id="worker1Speed" class="worker-input" value="150" step="1">
+            <div class="worker-result" id="worker1Result">0<span> шт</span></div>
+        </div>
+        
+        <div class="worker-row">
+            <div class="worker-info">
+                <span class="worker-icon">💼</span>
+                <span class="worker-name" id="worker2Name">Salesman</span>
+            </div>
+            <input type="number" id="worker2Speed" class="worker-input" value="250" step="1">
+            <div class="worker-result" id="worker2Result">0<span> шт</span></div>
+        </div>
+        
+        <div class="worker-row">
+            <div class="worker-info">
+                <span class="worker-icon">🔧</span>
+                <span class="worker-name" id="worker3Name">Another</span>
+            </div>
+            <input type="number" id="worker3Speed" class="worker-input" value="0" step="1">
+            <div class="worker-result" id="worker3Result">0<span> шт</span></div>
+        </div>
+        
+        <div class="calc-total">
+            <span class="total-label" id="totalLabel">📦 ВСЕГО:</span>
+            <span class="total-value" id="totalValue">0</span>
+        </div>
     </div>
 
     <div class="footer-note" id="footerNote">
-        ⏲️ каждый слот длится 1 час
+        ⏲️ каждый слот длится 1 час (серверное время GMT+2)
     </div>
 </div>
 
 <script>
-    // ---------- ПЕРЕВОДЫ ----------
+    // ========== ПЕРЕВОДЫ ==========
     const translations = {
-        ru: {
-            clockLabel: "⏱️ ВАШЕ ВРЕМЯ (ПК)",
-            currentLabel: "🔔 ПРОДАВАТЬ СЕЙЧАС",
-            queueHeader: "📋 ПО ОЧЕРЕДИ",
-            queueSub: "следующие старты",
-            footer: "⏲️ каждый слот длится 1 час",
-            noSlot: "⏸️ нет слота",
-            waiting: "ожидание",
-            loading: "загрузка...",
-            comingSoon: "✨ скоро появятся",
-            products: {
-                "Джем": "Джем",
-                "Кирпич": "Кирпич",
-                "Железо": "Железо",
-                "Кофе": "Кофе"
-            }
-        },
         en: {
-            clockLabel: "⏱️ YOUR TIME (PC)",
+            clockLabel: "YOUR LOCAL TIME",
             currentLabel: "🔔 SELL NOW",
             queueHeader: "📋 UP NEXT",
-            queueSub: "next starts",
-            footer: "⏲️ each slot lasts 1 hour",
+            queueSub: "next starts (your time)",
+            footer: "⏲️ each slot lasts 1 hour (server time GMT+2)",
             noSlot: "⏸️ no slot",
             waiting: "waiting",
-            loading: "loading...",
             comingSoon: "✨ coming soon",
-            products: {
-                "Джем": "Jam",
-                "Кирпич": "Bricks",
-                "Железо": "Iron",
-                "Кофе": "Coffee"
-            }
+            calcTitle: "📊 SALES FORECAST UNTIL HOUR END",
+            headerWorker: "Worker",
+            headerSpeed: "Speed",
+            headerForecast: "Forecast",
+            worker1Name: "Bargainer",
+            worker2Name: "Salesman",
+            worker3Name: "Another",
+            totalLabel: "📦 TOTAL:",
+            unit: " pcs",
+            products: { "Jam": "Jam", "Bricks": "Bricks", "Iron": "Iron", "Coffee": "Coffee" }
         },
         de: {
-            clockLabel: "⏱️ IHRE ZEIT (PC)",
+            clockLabel: "IHRE LOKALE ZEIT",
             currentLabel: "🔔 JETZT VERKAUFEN",
             queueHeader: "📋 ALS NÄCHSTES",
-            queueSub: "nächste Starts",
-            footer: "⏲️ jeder Slot dauert 1 Stunde",
+            queueSub: "nächste Starts (Ihre Zeit)",
+            footer: "⏲️ jeder Slot dauert 1 Stunde (Serverzeit GMT+2)",
             noSlot: "⏸️ kein Slot",
             waiting: "warten",
-            loading: "laden...",
             comingSoon: "✨ demnächst",
-            products: {
-                "Джем": "Marmelade",
-                "Кирпич": "Ziegel",
-                "Железо": "Eisen",
-                "Кофе": "Kaffee"
-            }
+            calcTitle: "📊 VERKAUFSPROGNOSE BIS ZUM STUNDENENDE",
+            headerWorker: "Arbeiter",
+            headerSpeed: "Geschw.",
+            headerForecast: "Prognose",
+            worker1Name: "Feilscher",
+            worker2Name: "Verkäufer",
+            worker3Name: "Ein anderer",
+            totalLabel: "📦 GESAMT:",
+            unit: " Stk",
+            products: { "Jam": "Marmelade", "Bricks": "Ziegel", "Iron": "Eisen", "Coffee": "Kaffee" }
+        },
+        ru: {
+            clockLabel: "ВАШЕ МЕСТНОЕ ВРЕМЯ",
+            currentLabel: "🔔 ПРОДАВАТЬ СЕЙЧАС",
+            queueHeader: "📋 ПО ОЧЕРЕДИ",
+            queueSub: "следующие старты (ваше время)",
+            footer: "⏲️ каждый слот длится 1 час (серверное время GMT+2)",
+            noSlot: "⏸️ нет слота",
+            waiting: "ожидание",
+            comingSoon: "✨ скоро появятся",
+            calcTitle: "📊 ПРОГНОЗ ПРОДАЖ ДО КОНЦА ЧАСА",
+            headerWorker: "Рабочий",
+            headerSpeed: "Скорость",
+            headerForecast: "Прогноз",
+            worker1Name: "Барыга",
+            worker2Name: "Продавец",
+            worker3Name: "Другой",
+            totalLabel: "📦 ВСЕГО:",
+            unit: " шт",
+            products: { "Jam": "Джем", "Bricks": "Кирпич", "Iron": "Железо", "Coffee": "Кофе" }
         }
     };
 
-    // ---------- РАСПИСАНИЕ (ВРЕМЯ НАЧАЛА - 48 МИНУТ) ----------
-    // Все слоты начинаются в XX:48
+    // ========== РАСПИСАНИЕ (СЕРВЕР GMT+2) ==========
     const productData = [
-        { name: "Джем",    slots: ["4:48", "8:48", "12:48", "16:48", "20:48", "0:48"] },
-        { name: "Кирпич",  slots: ["5:48", "9:48", "13:48", "17:48", "21:48", "1:48"] },
-        { name: "Железо",  slots: ["6:48", "10:48", "14:48", "18:48", "22:48", "2:48"] },
-        { name: "Кофе",    slots: ["7:48", "11:48", "15:48", "19:48", "23:48", "3:48"] }
+        { name: "Jam",     slots: ["1:48", "5:48", "9:48", "13:48", "17:48", "21:48"] },
+        { name: "Bricks",  slots: ["2:48", "6:48", "10:48", "14:48", "18:48", "22:48"] },
+        { name: "Iron",    slots: ["3:48", "7:48", "11:48", "15:48", "19:48", "23:48"] },
+        { name: "Coffee",  slots: ["4:48", "8:48", "12:48", "16:48", "20:48", "0:48"] }
     ];
 
     let currentLang = "ru";
+    let userTimezoneOffset = 5;
 
-    // Преобразует строку времени "Ч:ММ" в минуты от полуночи (0..1440)
     function timeToMinutes(timeStr) {
         let parts = timeStr.split(':');
         let hours = parseInt(parts[0], 10);
@@ -377,13 +582,30 @@
         return hours * 60 + minutes;
     }
 
-    // Получаем текущее время ПК в минутах от полуночи
-    function getCurrentPCMinutes() {
-        const now = new Date();
-        return now.getHours() * 60 + now.getMinutes();
+    function minutesToTime(minutes) {
+        let hrs = Math.floor(minutes / 60) % 24;
+        let mins = minutes % 60;
+        return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
     }
 
-    // Построить список всех возможных слотов (окон) с продуктами
+    // ========== ОПРЕДЕЛЕНИЕ СЕРВЕРНОГО ВРЕМЕНИ GMT+2 ==========
+    function getServerMinutes() {
+        const now = new Date();
+        let hours = now.getUTCHours() + 2;
+        const minutes = now.getUTCMinutes();
+        if (hours >= 24) hours -= 24;
+        return hours * 60 + minutes;
+    }
+
+    // ========== ПЕРЕСЧЁТ ВРЕМЕНИ ДЛЯ ПОЛЬЗОВАТЕЛЯ ==========
+    function serverToUserTime(serverMinutes) {
+        const diffHours = userTimezoneOffset - 2;
+        let userMinutes = serverMinutes + (diffHours * 60);
+        userMinutes = ((userMinutes % 1440) + 1440) % 1440;
+        return minutesToTime(userMinutes);
+    }
+
+    // ========== ВСЕ СЛОТЫ ==========
     function getAllSlots() {
         let slots = [];
         for (let prod of productData) {
@@ -392,7 +614,6 @@
                 slots.push({
                     product: prod.name,
                     startMin: startMin,
-                    startStr: slotStr,
                     endMin: startMin + 60
                 });
             }
@@ -403,200 +624,241 @@
 
     const allSlots = getAllSlots();
 
-    // Найти активный слот (текущее окно продажи) с учётом перехода через полночь
-    function findActiveSlot(nowMinutes) {
+    function findActiveSlot(serverMinutes) {
         for (let slot of allSlots) {
             let start = slot.startMin;
             let end = slot.endMin;
             if (end <= 1440) {
-                if (nowMinutes >= start && nowMinutes < end) {
-                    return slot;
-                }
+                if (serverMinutes >= start && serverMinutes < end) return slot;
             } else {
-                // слот переходит за полночь (например 23:48 -> 00:48 следующего дня)
-                if (nowMinutes >= start && nowMinutes < 1440) return slot;
-                if (nowMinutes >= 0 && nowMinutes < (end - 1440)) return slot;
+                if (serverMinutes >= start && serverMinutes < 1440) return slot;
+                if (serverMinutes >= 0 && serverMinutes < (end - 1440)) return slot;
             }
         }
         return null;
     }
 
-    // Получить следующие N слотов (для очереди) после текущего времени
-    function getNextSlots(nowMinutes, limit = 6) {
+    function getNextSlots(serverMinutes, limit = 6) {
         let startEntries = [];
         for (let prod of productData) {
             for (let slotStr of prod.slots) {
-                let startMin = timeToMinutes(slotStr);
                 startEntries.push({
                     product: prod.name,
-                    startMin: startMin,
-                    startStr: slotStr
+                    startMin: timeToMinutes(slotStr)
                 });
             }
         }
         startEntries.sort((a, b) => a.startMin - b.startMin);
         
-        let nextIndex = startEntries.findIndex(entry => entry.startMin > nowMinutes);
-        if (nextIndex === -1) {
-            nextIndex = 0;
-        }
+        let nextIndex = startEntries.findIndex(entry => entry.startMin > serverMinutes);
+        if (nextIndex === -1) nextIndex = 0;
         
         let result = [];
-        let total = startEntries.length;
         for (let i = 0; i < limit; i++) {
-            let idx = (nextIndex + i) % total;
+            let idx = (nextIndex + i) % startEntries.length;
             let entry = startEntries[idx];
-            let endMin = entry.startMin + 60;
-            let endHours = Math.floor(endMin / 60) % 24;
-            let endMins = endMin % 60;
-            let endStr = `${endHours}:${endMins.toString().padStart(2, '0')}`;
-            if (endStr.startsWith("24:")) endStr = "0:" + endStr.split(':')[1];
             result.push({
                 product: entry.product,
-                startStr: entry.startStr,
-                endStr: endStr
+                startBaseMin: entry.startMin,
+                endBaseMin: entry.startMin + 60
             });
         }
         return result;
     }
 
-    // Формирование строки интервала для активного слота
-    function formatActiveInterval(slot) {
-        if (!slot) return "—";
-        let endMin = slot.endMin;
-        let endHours = Math.floor(endMin / 60) % 24;
-        let endMins = endMin % 60;
-        let endStr = `${endHours}:${endMins.toString().padStart(2, '0')}`;
-        if (endStr.startsWith("24:")) endStr = "0:" + endStr.split(':')[1];
-        return `${slot.startStr} → ${endStr}`;
+    function translateProduct(name) {
+        return translations[currentLang].products[name] || name;
     }
 
-    // Перевести название товара
-    function translateProduct(originalName) {
+    // ========== РАСЧЁТ ПРОИЗВОДИТЕЛЬНОСТИ ==========
+    function getCurrentHourEndMinutes() {
+        const serverMinutes = getServerMinutes();
+        for (let slot of allSlots) {
+            let start = slot.startMin;
+            let end = slot.endMin;
+            if (end <= 1440) {
+                if (serverMinutes >= start && serverMinutes < end) return end;
+            } else {
+                if (serverMinutes >= start && serverMinutes < 1440) return 1440;
+                if (serverMinutes >= 0 && serverMinutes < (end - 1440)) return end;
+            }
+        }
+        return 1440;
+    }
+
+    function calculateAndDisplayWorkers() {
+        const nowMinutes = getServerMinutes();
+        const hourEndMinutes = getCurrentHourEndMinutes();
+        let remainingMinutes = hourEndMinutes - nowMinutes;
+        if (remainingMinutes < 0) remainingMinutes += 1440;
+        if (remainingMinutes > 60) remainingMinutes = 60;
+        
+        const speeds = [
+            parseFloat(document.getElementById('worker1Speed').value) || 0,
+            parseFloat(document.getElementById('worker2Speed').value) || 0,
+            parseFloat(document.getElementById('worker3Speed').value) || 0
+        ];
+        
         const t = translations[currentLang];
-        return t.products[originalName] || originalName;
+        const unit = t.unit;
+        
+        let total = 0;
+        for (let i = 0; i < 3; i++) {
+            let items = (speeds[i] * remainingMinutes) / 60;
+            let formatted = items.toFixed(1);
+            let resultEl = document.getElementById(`worker${i+1}Result`);
+            if (resultEl) {
+                resultEl.innerHTML = `${formatted}<span> ${unit}</span>`;
+            }
+            total += items;
+        }
+        
+        const totalEl = document.getElementById('totalValue');
+        if (totalEl) {
+            totalEl.innerText = total.toFixed(1) + unit;
+        }
     }
 
-    // ----- ОСНОВНАЯ ФУНКЦИЯ ОБНОВЛЕНИЯ ИНТЕРФЕЙСА -----
+    // ========== ОБНОВЛЕНИЕ ИНТЕРФЕЙСА ==========
     function refreshUI() {
         const t = translations[currentLang];
         
-        // Обновляем тексты интерфейса
         document.getElementById('clockLabel').innerText = t.clockLabel;
         document.getElementById('currentLabel').innerText = t.currentLabel;
         document.getElementById('queueHeader').innerText = t.queueHeader;
         document.getElementById('queueSub').innerText = t.queueSub;
         document.getElementById('footerNote').innerHTML = t.footer;
         
-        const nowMinutes = getCurrentPCMinutes();
-        const activeSlot = findActiveSlot(nowMinutes);
+        // Перевод блока расчёта
+        document.getElementById('calcTitle').innerText = t.calcTitle;
+        document.getElementById('headerWorker').innerText = t.headerWorker;
+        document.getElementById('headerSpeed').innerText = t.headerSpeed;
+        document.getElementById('headerForecast').innerText = t.headerForecast;
+        document.getElementById('worker1Name').innerText = t.worker1Name;
+        document.getElementById('worker2Name').innerText = t.worker2Name;
+        document.getElementById('worker3Name').innerText = t.worker3Name;
+        document.getElementById('totalLabel').innerText = t.totalLabel;
         
-        const currentProductEl = document.getElementById('currentProduct');
-        const currentIntervalEl = document.getElementById('currentInterval');
+        const serverMinutes = getServerMinutes();
+        const activeSlot = findActiveSlot(serverMinutes);
         
         if (activeSlot) {
-            currentProductEl.innerText = translateProduct(activeSlot.product);
-            currentIntervalEl.innerText = formatActiveInterval(activeSlot);
+            document.getElementById('currentProduct').innerText = translateProduct(activeSlot.product);
+            const userStart = serverToUserTime(activeSlot.startMin);
+            const userEnd = serverToUserTime(activeSlot.endMin);
+            document.getElementById('currentInterval').innerText = `${userStart} → ${userEnd}`;
         } else {
-            currentProductEl.innerText = t.noSlot;
-            currentIntervalEl.innerText = t.waiting;
+            document.getElementById('currentProduct').innerText = t.noSlot;
+            document.getElementById('currentInterval').innerText = t.waiting;
         }
         
-        const nextSlots = getNextSlots(nowMinutes, 6);
-        const queueContainer = document.getElementById('queueContainer');
+        const nextSlots = getNextSlots(serverMinutes, 6);
+        const container = document.getElementById('queueContainer');
         
         if (!nextSlots.length) {
-            queueContainer.innerHTML = `<div class="empty-msg">${t.comingSoon}</div>`;
-            return;
+            container.innerHTML = `<div class="empty-msg">${t.comingSoon}</div>`;
+        } else {
+            let html = '';
+            for (let slot of nextSlots) {
+                const userStart = serverToUserTime(slot.startBaseMin);
+                const userEnd = serverToUserTime(slot.endBaseMin);
+                html += `
+                    <div class="queue-row">
+                        <div class="product-name">${translateProduct(slot.product)}</div>
+                        <div class="time-slot">${userStart} → ${userEnd}</div>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
         }
         
-        let queueHTML = '';
-        for (let slot of nextSlots) {
-            queueHTML += `
-                <div class="queue-row">
-                    <div class="product-name">${translateProduct(slot.product)}</div>
-                    <div class="time-slot">${slot.startStr} → ${slot.endStr}</div>
-                </div>
-            `;
-        }
-        queueContainer.innerHTML = queueHTML;
+        calculateAndDisplayWorkers();
     }
     
-    // ----- ЖИВЫЕ ЧАСЫ -----
     function updateClock() {
         const now = new Date();
-        const hours = now.getHours().toString().padStart(2, '0');
-        const minutes = now.getMinutes().toString().padStart(2, '0');
-        const seconds = now.getSeconds().toString().padStart(2, '0');
-        const clockEl = document.getElementById('liveClock');
-        if (clockEl) {
-            clockEl.innerText = `${hours}:${minutes}:${seconds}`;
-        }
+        const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        document.getElementById('liveClock').innerText = timeStr;
+        calculateAndDisplayWorkers();
     }
     
-    // ----- ПЕРЕКЛЮЧЕНИЕ ЯЗЫКА -----
+    // ========== НАСТРОЙКИ ==========
     function setLanguage(lang) {
         currentLang = lang;
-        localStorage.setItem('trade_lang', lang);
-        
-        // Обновляем активную кнопку
+        localStorage.setItem('elderwood_lang', lang);
         document.querySelectorAll('.lang-btn').forEach(btn => {
-            if (btn.dataset.lang === lang) {
-                btn.classList.add('active');
-            } else {
-                btn.classList.remove('active');
-            }
+            btn.classList.toggle('active', btn.dataset.lang === lang);
         });
-        
         refreshUI();
     }
     
-    // ----- ЗАГРУЗКА НАСТРОЕК -----
+    function setTimezone(offset) {
+        userTimezoneOffset = parseInt(offset, 10);
+        localStorage.setItem('elderwood_tz', userTimezoneOffset);
+        refreshUI();
+    }
+    
     function loadSettings() {
-        const savedLang = localStorage.getItem('trade_lang');
-        if (savedLang && (savedLang === 'ru' || savedLang === 'en' || savedLang === 'de')) {
-            setLanguage(savedLang);
+        const savedLang = localStorage.getItem('elderwood_lang');
+        if (savedLang && ['en', 'de', 'ru'].includes(savedLang)) {
+            currentLang = savedLang;
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.lang === currentLang);
+            });
         } else {
-            setLanguage('ru');
+            currentLang = 'ru';
+            document.querySelector('.lang-btn[data-lang="ru"]').classList.add('active');
+        }
+        
+        const savedTz = localStorage.getItem('elderwood_tz');
+        if (savedTz !== null) {
+            userTimezoneOffset = parseInt(savedTz, 10);
+        } else {
+            userTimezoneOffset = 5;
+        }
+        const tzSelect = document.getElementById('tzSelect');
+        if (tzSelect) {
+            tzSelect.value = userTimezoneOffset;
         }
     }
     
-    // ----- ОБРАБОТЧИКИ КНОПОК -----
     function bindEvents() {
         document.querySelectorAll('.lang-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                setLanguage(btn.dataset.lang);
-            });
+            btn.addEventListener('click', () => setLanguage(btn.dataset.lang));
+        });
+        const tzSelect = document.getElementById('tzSelect');
+        if (tzSelect) {
+            tzSelect.addEventListener('change', (e) => setTimezone(e.target.value));
+        }
+        
+        const inputs = ['worker1Speed', 'worker2Speed', 'worker3Speed'];
+        inputs.forEach(id => {
+            const input = document.getElementById(id);
+            if (input) {
+                input.addEventListener('input', () => calculateAndDisplayWorkers());
+                input.addEventListener('change', () => calculateAndDisplayWorkers());
+            }
         });
     }
     
-    // Автообновление
     let clockInterval, refreshInterval;
     
-    function startAutoUpdate() {
-        if (clockInterval) clearInterval(clockInterval);
-        clockInterval = setInterval(() => {
-            updateClock();
-        }, 1000);
+    function start() {
+        loadSettings();
+        bindEvents();
         
+        if (clockInterval) clearInterval(clockInterval);
         if (refreshInterval) clearInterval(refreshInterval);
-        refreshInterval = setInterval(() => {
-            refreshUI();
-        }, 15000);
+        
+        clockInterval = setInterval(updateClock, 1000);
+        refreshInterval = setInterval(refreshUI, 5000);
         
         updateClock();
         refreshUI();
     }
     
-    // Инициализация
-    loadSettings();
-    bindEvents();
-    startAutoUpdate();
-    
-    window.addEventListener('focus', () => {
-        refreshUI();
-        updateClock();
-    });
+    start();
+    window.addEventListener('focus', () => { refreshUI(); updateClock(); });
 </script>
 </body>
 </html>
