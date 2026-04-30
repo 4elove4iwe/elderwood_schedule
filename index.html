@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
@@ -260,7 +260,6 @@
             font-size: 0.7rem;
         }
 
-        /* Блок расчёта производительности */
         .calc-section {
             margin-top: 20px;
             background: #0a1a18;
@@ -409,22 +408,22 @@
 <div class="widget">
     <div class="lang-panel">
         <label>🌐 LANGUAGE</label>
-        <button class="lang-btn" data-lang="en">EN</button>
+        <button class="lang-btn active" data-lang="en">EN</button>
         <button class="lang-btn" data-lang="de">DE</button>
-        <button class="lang-btn active" data-lang="ru">RU</button>
+        <button class="lang-btn" data-lang="ru">RU</button>
     </div>
 
     <div class="tz-panel">
-        <label>🕐 ВАШ ЧАСОВОЙ ПОЯС</label>
+        <label id="tzLabel">🕐 YOUR TIMEZONE</label>
         <select id="tzSelect" class="tz-select">
             <option value="-12">GMT -12</option><option value="-11">GMT -11</option><option value="-10">GMT -10</option>
             <option value="-9">GMT -9</option><option value="-8">GMT -8</option><option value="-7">GMT -7</option>
             <option value="-6">GMT -6</option><option value="-5">GMT -5</option><option value="-4">GMT -4</option>
             <option value="-3">GMT -3</option><option value="-2">GMT -2</option><option value="-1">GMT -1</option>
             <option value="0">GMT 0</option><option value="1">GMT +1</option>
-            <option value="2">GMT +2 (сервер)</option>
+            <option value="2" selected>GMT +2 (server)</option>
             <option value="3">GMT +3</option><option value="4">GMT +4</option>
-            <option value="5" selected>GMT +5</option>
+            <option value="5">GMT +5</option>
             <option value="6">GMT +6</option><option value="7">GMT +7</option><option value="8">GMT +8</option>
             <option value="9">GMT +9</option><option value="10">GMT +10</option><option value="11">GMT +11</option>
             <option value="12">GMT +12</option>
@@ -433,31 +432,30 @@
 
     <div class="time-panel">
         <div class="clock" id="liveClock">--:--:--</div>
-        <div class="clock-label" id="clockLabel">ВАШЕ МЕСТНОЕ ВРЕМЯ</div>
+        <div class="clock-label" id="clockLabel">YOUR LOCAL TIME</div>
     </div>
 
     <div class="current-block">
-        <div class="current-label" id="currentLabel">🔔 ПРОДАВАТЬ СЕЙЧАС</div>
+        <div class="current-label" id="currentLabel">🔔 SELL NOW</div>
         <div class="current-product" id="currentProduct">—</div>
         <div class="current-interval" id="currentInterval">—</div>
     </div>
 
     <div class="queue-header">
-        <span id="queueHeader">📋 ПО ОЧЕРЕДИ</span>
-        <span id="queueSub">следующие старты (ваше время)</span>
+        <span id="queueHeader">📋 UP NEXT</span>
+        <span id="queueSub">next starts (your time)</span>
     </div>
     <div id="queueContainer" class="queue-list">
-        <div class="empty-msg">загрузка...</div>
+        <div class="empty-msg">loading...</div>
     </div>
 
-    <!-- Блок расчёта производительности -->
     <div class="calc-section">
-        <div class="calc-title" id="calcTitle">📊 ПРОГНОЗ ПРОДАЖ ДО КОНЦА ЧАСА</div>
+        <div class="calc-title" id="calcTitle">📊 SALES FORECAST UNTIL HOUR END</div>
         
         <div class="calc-headers">
-            <span class="calc-header-worker" id="headerWorker">Рабочий</span>
-            <span class="calc-header-speed" id="headerSpeed">Скорость</span>
-            <span class="calc-header-forecast" id="headerForecast">Прогноз</span>
+            <span class="calc-header-worker" id="headerWorker">Worker</span>
+            <span class="calc-header-speed" id="headerSpeed">Speed</span>
+            <span class="calc-header-forecast" id="headerForecast">Forecast</span>
         </div>
         
         <div class="worker-row">
@@ -466,7 +464,7 @@
                 <span class="worker-name" id="worker1Name">Bargainer</span>
             </div>
             <input type="number" id="worker1Speed" class="worker-input" value="150" step="1">
-            <div class="worker-result" id="worker1Result">0<span> шт</span></div>
+            <div class="worker-result" id="worker1Result">0<span> pcs</span></div>
         </div>
         
         <div class="worker-row">
@@ -475,7 +473,7 @@
                 <span class="worker-name" id="worker2Name">Salesman</span>
             </div>
             <input type="number" id="worker2Speed" class="worker-input" value="250" step="1">
-            <div class="worker-result" id="worker2Result">0<span> шт</span></div>
+            <div class="worker-result" id="worker2Result">0<span> pcs</span></div>
         </div>
         
         <div class="worker-row">
@@ -484,22 +482,22 @@
                 <span class="worker-name" id="worker3Name">Another</span>
             </div>
             <input type="number" id="worker3Speed" class="worker-input" value="0" step="1">
-            <div class="worker-result" id="worker3Result">0<span> шт</span></div>
+            <div class="worker-result" id="worker3Result">0<span> pcs</span></div>
         </div>
         
         <div class="calc-total">
-            <span class="total-label" id="totalLabel">📦 ВСЕГО:</span>
+            <span class="total-label" id="totalLabel">📦 TOTAL:</span>
             <span class="total-value" id="totalValue">0</span>
         </div>
     </div>
 
     <div class="footer-note" id="footerNote">
-        ⏲️ каждый слот длится 1 час (серверное время GMT+2)
+        ⏲️ each slot lasts 1 hour (server time GMT+2)
     </div>
 </div>
 
 <script>
-    // ========== ПЕРЕВОДЫ ==========
+    // ========== TRANSLATIONS ==========
     const translations = {
         en: {
             clockLabel: "YOUR LOCAL TIME",
@@ -519,6 +517,7 @@
             worker3Name: "Another",
             totalLabel: "📦 TOTAL:",
             unit: " pcs",
+            tzLabel: "🕐 YOUR TIMEZONE",
             products: { "Jam": "Jam", "Bricks": "Bricks", "Iron": "Iron", "Coffee": "Coffee" }
         },
         de: {
@@ -539,6 +538,7 @@
             worker3Name: "Ein anderer",
             totalLabel: "📦 GESAMT:",
             unit: " Stk",
+            tzLabel: "🕐 IHRE ZEITZONE",
             products: { "Jam": "Marmelade", "Bricks": "Ziegel", "Iron": "Eisen", "Coffee": "Kaffee" }
         },
         ru: {
@@ -559,11 +559,12 @@
             worker3Name: "Другой",
             totalLabel: "📦 ВСЕГО:",
             unit: " шт",
+            tzLabel: "🕐 ВАШ ЧАСОВОЙ ПОЯС",
             products: { "Jam": "Джем", "Bricks": "Кирпич", "Iron": "Железо", "Coffee": "Кофе" }
         }
     };
 
-    // ========== РАСПИСАНИЕ (СЕРВЕР GMT+2) ==========
+    // ========== SCHEDULE (SERVER GMT+2) ==========
     const productData = [
         { name: "Jam",     slots: ["1:48", "5:48", "9:48", "13:48", "17:48", "21:48"] },
         { name: "Bricks",  slots: ["2:48", "6:48", "10:48", "14:48", "18:48", "22:48"] },
@@ -571,8 +572,8 @@
         { name: "Coffee",  slots: ["4:48", "8:48", "12:48", "16:48", "20:48", "0:48"] }
     ];
 
-    let currentLang = "ru";
-    let userTimezoneOffset = 5;
+    let currentLang = "en";
+    let userTimezoneOffset = 2; // по умолчанию GMT+2 (сервер)
 
     function timeToMinutes(timeStr) {
         let parts = timeStr.split(':');
@@ -588,7 +589,6 @@
         return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
     }
 
-    // ========== ОПРЕДЕЛЕНИЕ СЕРВЕРНОГО ВРЕМЕНИ GMT+2 ==========
     function getServerMinutes() {
         const now = new Date();
         let hours = now.getUTCHours() + 2;
@@ -597,7 +597,6 @@
         return hours * 60 + minutes;
     }
 
-    // ========== ПЕРЕСЧЁТ ВРЕМЕНИ ДЛЯ ПОЛЬЗОВАТЕЛЯ ==========
     function serverToUserTime(serverMinutes) {
         const diffHours = userTimezoneOffset - 2;
         let userMinutes = serverMinutes + (diffHours * 60);
@@ -605,7 +604,6 @@
         return minutesToTime(userMinutes);
     }
 
-    // ========== ВСЕ СЛОТЫ ==========
     function getAllSlots() {
         let slots = [];
         for (let prod of productData) {
@@ -670,7 +668,6 @@
         return translations[currentLang].products[name] || name;
     }
 
-    // ========== РАСЧЁТ ПРОИЗВОДИТЕЛЬНОСТИ ==========
     function getCurrentHourEndMinutes() {
         const serverMinutes = getServerMinutes();
         for (let slot of allSlots) {
@@ -719,7 +716,6 @@
         }
     }
 
-    // ========== ОБНОВЛЕНИЕ ИНТЕРФЕЙСА ==========
     function refreshUI() {
         const t = translations[currentLang];
         
@@ -729,7 +725,8 @@
         document.getElementById('queueSub').innerText = t.queueSub;
         document.getElementById('footerNote').innerHTML = t.footer;
         
-        // Перевод блока расчёта
+        document.getElementById('tzLabel').innerText = t.tzLabel;
+        
         document.getElementById('calcTitle').innerText = t.calcTitle;
         document.getElementById('headerWorker').innerText = t.headerWorker;
         document.getElementById('headerSpeed').innerText = t.headerSpeed;
@@ -782,7 +779,6 @@
         calculateAndDisplayWorkers();
     }
     
-    // ========== НАСТРОЙКИ ==========
     function setLanguage(lang) {
         currentLang = lang;
         localStorage.setItem('elderwood_lang', lang);
@@ -806,15 +802,15 @@
                 btn.classList.toggle('active', btn.dataset.lang === currentLang);
             });
         } else {
-            currentLang = 'ru';
-            document.querySelector('.lang-btn[data-lang="ru"]').classList.add('active');
+            currentLang = 'en';
+            document.querySelector('.lang-btn[data-lang="en"]').classList.add('active');
         }
         
         const savedTz = localStorage.getItem('elderwood_tz');
         if (savedTz !== null) {
             userTimezoneOffset = parseInt(savedTz, 10);
         } else {
-            userTimezoneOffset = 5;
+            userTimezoneOffset = 2; // по умолчанию GMT+2 (сервер)
         }
         const tzSelect = document.getElementById('tzSelect');
         if (tzSelect) {
