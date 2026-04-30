@@ -554,7 +554,7 @@
 </div>
 
 <script>
-    // ========== ЗВУКОВОЕ ОПОВЕЩЕНИЕ ==========
+    // ========== ЗВУКОВОЕ ОПОВЕЩЕНИЕ (более длинное) ==========
     let audioContext = null;
     let soundEnabled = true;
     let lastProductName = "";
@@ -572,7 +572,7 @@
         }
     }
 
-    function playBeep(frequency = 880, duration = 0.2, type = "sine") {
+    function playBeep(frequency, duration, gainValue = 0.3) {
         if (!soundEnabled) return;
         try {
             initAudio();
@@ -585,8 +585,8 @@
             gainNode.connect(audioContext.destination);
             
             oscillator.frequency.value = frequency;
-            oscillator.type = type;
-            gainNode.gain.value = 0.3;
+            oscillator.type = "sine";
+            gainNode.gain.value = gainValue;
             
             oscillator.start();
             gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + duration);
@@ -596,21 +596,21 @@
         }
     }
 
-    // Трёхкратное повторение звука при смене товара
+    // Длинное прерывистое оповещение при смене товара
     function playProductChangeSound() {
         if (!soundEnabled) return;
-        playBeep(880, 0.12, "sine");
-        setTimeout(() => playBeep(880, 0.12, "sine"), 200);
-        setTimeout(() => playBeep(880, 0.12, "sine"), 400);
+        // Три длинных сигнала с повышением тона
+        playBeep(660, 0.25, 0.35);
+        setTimeout(() => playBeep(880, 0.25, 0.35), 350);
+        setTimeout(() => playBeep(1100, 0.3, 0.35), 750);
     }
 
-    // Тест звука (трёхкратный)
     function testSound() {
         if (!soundEnabled) return;
         initAudio();
-        playBeep(660, 0.15, "sine");
-        setTimeout(() => playBeep(880, 0.15, "sine"), 250);
-        setTimeout(() => playBeep(660, 0.3, "sine"), 550);
+        playBeep(660, 0.25, 0.35);
+        setTimeout(() => playBeep(880, 0.25, 0.35), 350);
+        setTimeout(() => playBeep(1100, 0.3, 0.35), 750);
     }
 
     // ========== TRANSLATIONS ==========
@@ -787,27 +787,36 @@
         return translations[currentLang].products[name] || name;
     }
 
-    function getCurrentHourEndMinutes() {
-        const serverMinutes = getServerMinutes();
-        for (let slot of allSlots) {
-            let start = slot.startMin;
-            let end = slot.endMin;
-            if (end <= 1440) {
-                if (serverMinutes >= start && serverMinutes < end) return end;
-            } else {
-                if (serverMinutes >= start && serverMinutes < 1440) return 1440;
-                if (serverMinutes >= 0 && serverMinutes < (end - 1440)) return end;
+    // ИСПРАВЛЕННЫЙ РАСЧЁТ ОСТАТКА ДО КОНЦА ЧАСА (работает после полуночи)
+    function getRemainingMinutes() {
+        const nowMinutes = getServerMinutes();
+        const activeSlot = findActiveSlot(nowMinutes);
+        
+        if (!activeSlot) return 0;
+        
+        let endMinutes = activeSlot.endMin;
+        let remaining = endMinutes - nowMinutes;
+        
+        // Если конец часа переходит через полночь (endMinutes > 1440)
+        if (endMinutes > 1440) {
+            // Сейчас время между start и 1440
+            if (nowMinutes >= activeSlot.startMin && nowMinutes < 1440) {
+                remaining = 1440 - nowMinutes;
+            } 
+            // Сейчас время между 0 и (end-1440)
+            else if (nowMinutes >= 0 && nowMinutes < (endMinutes - 1440)) {
+                remaining = (endMinutes - 1440) - nowMinutes;
             }
         }
-        return 1440;
+        
+        // Ограничиваем 0-60
+        if (remaining < 0) remaining = 0;
+        if (remaining > 60) remaining = 60;
+        return remaining;
     }
 
     function calculateAndDisplayWorkers() {
-        const nowMinutes = getServerMinutes();
-        const hourEndMinutes = getCurrentHourEndMinutes();
-        let remainingMinutes = hourEndMinutes - nowMinutes;
-        if (remainingMinutes < 0) remainingMinutes += 1440;
-        if (remainingMinutes > 60) remainingMinutes = 60;
+        const remainingMinutes = getRemainingMinutes();
         
         const speeds = [
             parseFloat(document.getElementById('worker1Speed').value) || 0,
