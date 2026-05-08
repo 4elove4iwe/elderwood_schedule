@@ -643,7 +643,6 @@
         const t = translations[lang];
         let fullName = t.products[originalName] || originalName;
         
-        // Если название содержит "/", разделяем на части и добавляем пробелы и цвета
         if (fullName.includes('/')) {
             const parts = fullName.split('/');
             const firstPart = parts[0];
@@ -738,12 +737,12 @@
         }
     };
 
-    // ========== SCHEDULE (SERVER GMT+2) ==========
+    // ========== SCHEDULE (SERVER GMT+2) - ОБНОВЛЕНО НА :52 МИНУТЫ ==========
     const productData = [
-        { name: "Jam",     slots: ["1:48", "5:48", "9:48", "13:48", "17:48", "21:48"] },
-        { name: "Bricks",  slots: ["2:48", "6:48", "10:48", "14:48", "18:48", "22:48"] },
-        { name: "Iron",    slots: ["3:48", "7:48", "11:48", "15:48", "19:48", "23:48"] },
-        { name: "Coffee",  slots: ["4:48", "8:48", "12:48", "16:48", "20:48", "0:48"] }
+        { name: "Jam",     slots: ["1:52", "5:52", "9:52", "13:52", "17:52", "21:52"] },
+        { name: "Bricks",  slots: ["2:52", "6:52", "10:52", "14:52", "18:52", "22:52"] },
+        { name: "Iron",    slots: ["3:52", "7:52", "11:52", "15:52", "19:52", "23:52"] },
+        { name: "Coffee",  slots: ["4:52", "8:52", "12:52", "16:52", "20:52", "0:52"] }
     ];
 
     let currentLang = "en";
